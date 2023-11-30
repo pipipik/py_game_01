@@ -1,4 +1,4 @@
-"""draw_01.py"""
+"""draw_02.py"""
 import sys
 import pygame
 from pygame.locals import QUIT, Rect
@@ -32,6 +32,18 @@ def main():
     # 黄 : 矩形、Rectオブジェクト
     rect1 = Rect((30, 160), (100, 50))
     pygame.draw.rect(SURFACE, (255, 255, 0), rect1)
+
+    # circle(SURFACE: ベース画面オブジェクト, color: 色, pos: 中心座標, radius: 半径, width: 線の幅)
+    # 赤 : 塗りつぶし
+    pygame.draw.circle(SURFACE, (255, 0, 0), (50, 50), 20)
+    # 赤 : 太さ 10
+    pygame.draw.circle(SURFACE, (255, 0, 0), (150, 50), 20, 3)
+    # 緑 : 半径 10
+    pygame.draw.circle(SURFACE, (0, 255, 0), (50, 150), 10)
+    # 緑 : 半径 20
+    pygame.draw.circle(SURFACE, (0, 255, 0), (150, 150), 20)
+    # 緑 : 半径 30
+    pygame.draw.circle(SURFACE, (0, 255, 0), (250, 150), 30)
 
     pygame.display.update() # プログラム中に描画した内容を画面に反映
     FPSCLOCK.tick(10) # 1秒間に10回ループが実行
