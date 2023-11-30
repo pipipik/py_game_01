@@ -1,10 +1,11 @@
-"""fps_test1.py"""
+"""fps_test2.py"""
 import sys
 import pygame
 from pygame.locals import QUIT
 
 pygame.init() # pygameモジュールを初期化
 SURFACE = pygame.display.set_mode((400, 300)) #サイズを指定してウィンドウを作成
+FPSCLOCK = pygame.time.Clock() # クロックオブジェクトを作成
 
 def main():
   """main routine"""
@@ -26,6 +27,7 @@ def main():
     # ベース画面オブジェクト.blit(テキスト画面オブジェクト, 表示座標, area=表示エリア, special_flags=色合成)
     SURFACE.blit(count_image, (50, 50))
     pygame.display.update() # プログラム中に描画した内容を画面に反映
+    FPSCLOCK.tick(10) # 1秒間に10回ループが実行
 
 # 自ファイルから開始された時にmain関数が実行
 if __name__ == '__main__':
