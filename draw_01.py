@@ -1,4 +1,4 @@
-"""draw_02.py"""
+"""draw_03.py"""
 import sys
 import pygame
 from pygame.locals import QUIT, Rect
@@ -44,6 +44,14 @@ def main():
     pygame.draw.circle(SURFACE, (0, 255, 0), (150, 150), 20)
     # 緑 : 半径 30
     pygame.draw.circle(SURFACE, (0, 255, 0), (250, 150), 30)
+
+    # circle(SURFACE: ベース画面オブジェクト, color: 色, Rect: 楕円に外接する矩形の位置、サイズ, width: 線の幅)
+    # 赤
+    pygame.draw.ellipse(SURFACE, (255, 0, 0), (50, 50, 140, 60))
+    pygame.draw.ellipse(SURFACE, (255, 0, 0), (250, 30, 90, 90))
+    # 緑
+    pygame.draw.ellipse(SURFACE, (0, 255, 0), (50, 150, 110, 60), 5)
+    pygame.draw.ellipse(SURFACE, (0, 255, 0), ((250, 130), (90, 90)), 20)
 
     pygame.display.update() # プログラム中に描画した内容を画面に反映
     FPSCLOCK.tick(10) # 1秒間に10回ループが実行
