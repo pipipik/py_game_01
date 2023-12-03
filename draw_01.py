@@ -1,4 +1,4 @@
-"""draw_03.py"""
+"""draw_04.py"""
 import sys
 import pygame
 from pygame.locals import QUIT, Rect
@@ -52,6 +52,18 @@ def main():
     # 緑
     pygame.draw.ellipse(SURFACE, (0, 255, 0), (50, 150, 110, 60), 5)
     pygame.draw.ellipse(SURFACE, (0, 255, 0), ((250, 130), (90, 90)), 20)
+
+    # line(SURFACE: ベース画面オブジェクト, color: 色, start_pos: 始点, end_pos: 終点, width: 線の幅)
+    # 赤 : 横線
+    pygame.draw.line(SURFACE, (255, 0, 0), (10, 80), (200, 80))
+    # 赤 : 横線(太さ 15)
+    pygame.draw.line(SURFACE, (255, 0, 0), (10, 150), (200, 150), 15)
+    # 緑 : 縦線
+    pygame.draw.line(SURFACE, (0, 255, 0), (250, 30), (250, 200))
+    # 青 : 斜線(太さ 10)
+    start_pos = (300, 30)
+    end_pos = (380, 200)
+    pygame.draw.line(SURFACE, (0, 0, 255), start_pos, end_pos, 10)
 
     pygame.display.update() # プログラム中に描画した内容を画面に反映
     FPSCLOCK.tick(10) # 1秒間に10回ループが実行
