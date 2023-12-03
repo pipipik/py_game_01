@@ -1,4 +1,4 @@
-"""draw_04.py"""
+"""draw_04_1.py"""
 import sys
 import pygame
 from pygame.locals import QUIT, Rect
@@ -17,7 +17,7 @@ def main():
         pygame.quit() # pygameの初期化を解除
         sys.exit() # プログラム終了
 
-    SURFACE.fill((255, 255, 255)) # ウィンドウを白色(R,G,B)に塗りつぶす
+    SURFACE.fill((0, 0, 0)) # ウィンドウを黒色(R,G,B)に塗りつぶす
     
     # rect(SURFACE: ベース画面オブジェクト, color: 色, (x, y, width, height): 位置, サイズ, width: 線の幅)
     # 赤 : 矩形(塗りつぶし)
@@ -64,6 +64,14 @@ def main():
     start_pos = (300, 30)
     end_pos = (380, 200)
     pygame.draw.line(SURFACE, (0, 0, 255), start_pos, end_pos, 10)
+
+    #for文と組み合わせて格子状の模様を作成
+    # 白 : 縦線
+    for xpos in range(0, 400, 25): #0から400まで25ずつの幅で増加するxpos(x座標)
+      pygame.draw.line(SURFACE, 0xFFFFFF, (xpos, 0), (xpos, 300))
+    # 白 : 横線
+    for ypos in range(0, 300, 25): #0から300まで25ずつの幅で増加するypos(y座標)
+      pygame.draw.line(SURFACE, 0xFFFFFF, (0, ypos), (400, ypos))
 
     pygame.display.update() # プログラム中に描画した内容を画面に反映
     FPSCLOCK.tick(10) # 1秒間に10回ループが実行
