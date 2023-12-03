@@ -1,5 +1,6 @@
-"""draw_04_1.py"""
+"""draw_05.py"""
 import sys
+import random
 import pygame
 from pygame.locals import QUIT, Rect
 
@@ -73,8 +74,17 @@ def main():
     for ypos in range(0, 300, 25): #0から300まで25ずつの幅で増加するypos(y座標)
       pygame.draw.line(SURFACE, 0xFFFFFF, (0, ypos), (400, ypos))
 
+    # 複数の点を結ぶ線
+    # lines(SURFACE: ベース画面オブジェクト, color: 色, closed: 始点と終点を結ぶか, pointlist: 点のリスト, width: 線の幅)
+    pointlist = [] # 点のリストを初期化
+    for _ in range(10): # 乱数で10個の点を生成
+      xpos = random.randint(0, 400)
+      ypos = random.randint(0, 300)
+      pointlist.append((xpos, ypos))
+    pygame.draw.lines(SURFACE, (255, 255, 255), True, pointlist, 5)
+
     pygame.display.update() # プログラム中に描画した内容を画面に反映
-    FPSCLOCK.tick(10) # 1秒間に10回ループが実行
+    FPSCLOCK.tick(1) # 1秒間に10回ループが実行
 
 # 自ファイルから開始された時にmain関数が実行
 if __name__ == '__main__':
