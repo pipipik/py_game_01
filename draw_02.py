@@ -1,8 +1,8 @@
-"""draw_polygon.py"""
+"""draw_image1.py"""
 import sys
 from math import sin, cos, radians
 import pygame
-from pygame.locals import QUIT
+from pygame.locals import QUIT, Rect
 
 pygame.init() # pygameモジュールを初期化
 SURFACE = pygame.display.set_mode((400, 300)) #サイズを指定してウィンドウを作成
@@ -10,6 +10,9 @@ FPSCLOCK = pygame.time.Clock() # クロックオブジェクトを作成
 
 def main():
   """main routine"""
+  # 画像ファイルをロード
+  # load(filename: 画像ファイル)
+  logo = pygame.image.load("game.png")
 
   while True:
     for event in pygame.event.get(): # イベントキューからイベントを取得
@@ -18,7 +21,7 @@ def main():
         pygame.quit() # pygameの初期化を解除
         sys.exit() # プログラム終了
 
-    SURFACE.fill((0, 0, 0)) # ウィンドウを黒色(R,G,B)に塗りつぶす
+    SURFACE.fill((255, 255, 255)) # ウィンドウを白色(R,G,B)に塗りつぶす
     
     # 多角形(ポリゴン)
     pointlist0, pointlist1 = [], [] # 点のリストを初期化
@@ -31,6 +34,12 @@ def main():
     # lines(SURFACE: ベース画面オブジェクト, color: 色, pointlist: 点のリスト, width: 線の幅(0の時は塗りつぶし))
     pygame.draw.polygon(SURFACE, (255, 255, 255), pointlist1)
 
+    # 画像
+    # コピー先のSURFACEオブジェクト.blit(source: コピー元のSurfaceオブジェクト, dest: コピーする座標(左上)
+    #                               , area: コピーする領域(一部のみ描画する時), special_flags: コピー時の演算方法)
+    # 左上が(20, 50)の位置にロゴを描画
+    SURFACE.blit(logo, (20, 50))
+    
     pygame.display.update() # プログラム中に描画した内容を画面に反映
     FPSCLOCK.tick(1) # 1秒間に10回ループが実行
 
