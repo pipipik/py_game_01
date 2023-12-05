@@ -1,27 +1,42 @@
-"""draw_image_subregion1.py"""
+"""draw_image_subregion2.py"""
 import sys
 from math import sin, cos, radians
 import pygame
-from pygame.locals import QUIT, Rect
+from pygame.locals import QUIT, Rect, KEYDOWN, K_LEFT, K_RIGHT
 
 pygame.init() # pygameモジュールを初期化
-SURFACE = pygame.display.set_mode((400, 200)) #サイズを指定してウィンドウを作成
+pygame.key.set_repeat(5, 5) # キーの押下と押しっぱなしの取得
+SURFACE = pygame.display.set_mode((300, 200)) #サイズを指定してウィンドウを作成
 FPSCLOCK = pygame.time.Clock() # クロックオブジェクトを作成
 
 def main():
   """main routine"""
   # 画像ファイルをロード
   # load(filename: 画像ファイル)
-  logo = pygame.image.load("game.png")
+  #logo = pygame.image.load("game.png")
+  # strip.pngを9分割してimagesに格納する
+  strip = pygame.image.load("strip.png")
+  images = [] # コピー元のSurfaceオブジェクトを初期化
+  for index in range(9): # indexを0~8まで
+    image = pygame.Surface((24, 24)) #コピー先のSurfaceオブジェクトを作成
+    image.blit(strip, (0, 0), Rect(index * 24, 0, 24, 24)) # stripを24ずつ分割してimageに描画
+    images.append(image) # imageを9回追加
 
+  counter = 0
+  pos_x = 100
   while True:
     for event in pygame.event.get(): # イベントキューからイベントを取得
       # 終了イベントを検出した時にプログラムを終了する
       if event.type == QUIT: # イベントがQUITの時
         pygame.quit() # pygameの初期化を解除
         sys.exit() # プログラム終了
+      elif event.type == KEYDOWN: # キー押下
+        if event.key == K_LEFT: # 左押下でx座標を-5
+          pos_x -= 5
+        elif event.key == K_RIGHT: # 右押下でx座標を+5
+          pos_x += 5
 
-    SURFACE.fill((255, 255, 255)) # ウィンドウを白色(R,G,B)に塗りつぶす
+    SURFACE.fill((0, 0, 0)) # ウィンドウを黒色(R,G,B)に塗りつぶす
     
     """# 多角形(ポリゴン)
     pointlist0, pointlist1 = [], [] # 点のリストを初期化
@@ -41,9 +56,20 @@ def main():
     # 左上が(20, 50)の位置にロゴを描画
     #SURFACE.blit(logo, (20, 50))
     """
+    """
     # 画像(サブリージョン)
     SURFACE.blit(logo,(0, 0))
     SURFACE.blit(logo, (250, 50), Rect(50, 50, 100, 100))
+    """
+    # アイコンを交互に表示
+    SURFACE.blit(images[counter % 2 + 0], (50, 50)) # images[0]と[1]
+    SURFACE.blit(images[counter % 2 + 2], (100, 50)) # images[2]と[3]
+    SURFACE.blit(images[counter % 2 + 4], (150, 50)) # images[4]と[5]
+    SURFACE.blit(images[counter % 2 + 6], (200, 50)) # images[6]と[7]
+    counter += 1
+
+    # 右端のアイコンはユーザのキー操作によってx座標の位置を変化させて描画
+    SURFACE.blit(images[8], (pos_x, 150))
 
     pygame.display.update() # プログラム中に描画した内容を画面に反映
     FPSCLOCK.tick(1) # 1秒間に1回ループが実行
