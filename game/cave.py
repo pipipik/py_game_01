@@ -16,6 +16,8 @@ def main():
   slope = randint(1, 6) # 傾きを指定(randint: 0～6の範囲の整数値をランダムに取得)
   ship_y = 250 # 自機のY座標
   velocity = 0 # 自機が上下に移動する際の速度
+  score = 0 # スコア
+  sysfont = pygame.font.SysFont(None, 36) # フォントオブジェクト作成
   ship_image = pygame.image.load("ship.png") # 自機_image
   bang_image = pygame.image.load("bang.png") # gameover_image
   for xpos in range(walls): # x座標を10ずつずらしながら80個の矩形を作成
@@ -35,6 +37,7 @@ def main():
 
     # game中の処理
     if not game_over:
+      score += 10 # スコア+10
       # 自機の移動
       # SPACEキー押下状態に応じて速度を-3(上昇)、+3(落下)変化させる
       velocity += -3 if is_space_down else 3
@@ -61,12 +64,16 @@ def main():
     for hole in holes: # 画面オブジェクトに黒色の矩形リストholesを描画
       pygame.draw.rect(SURFACE, (0, 0, 0), hole)
     SURFACE.blit(ship_image, (0, ship_y)) # 自機を描画
+    # render(text: 描画するテキスト, antialias: アンチエイリアス(輪郭をスムーズに), color: 色)
+    score_image = sysfont.render("score is {}".format(score), True, (0, 0, 225))
+    SURFACE.blit(score_image, (600, 20))
 
+    # gameover時のimageを描画
     if game_over:
       SURFACE.blit(bang_image, (0, ship_y-40))
 
     pygame.display.update() # プログラム中に描画した内容を画面に反映
-    FPSCLOCK.tick(10) # 1秒間に10回ループが実行
+    FPSCLOCK.tick(15) # 1秒間に10回ループが実行
 
 # 自ファイルから開始された時にmain関数が実行
 if __name__ == '__main__':
