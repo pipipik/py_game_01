@@ -2,9 +2,10 @@
 import sys
 from random import randint
 import pygame
-from pygame.locals import QUIT, Rect
+from pygame.locals import QUIT, Rect, KEYDOWN, K_SPACE
 
 pygame.init() # pygameモジュールを初期化
+pygame.key.set_repeat(5, 5) # キーを押し続けた時に連続してKEYDOWNイベントを生成する
 SURFACE = pygame.display.set_mode((800, 600)) #サイズを指定してウィンドウを作成
 FPSCLOCK = pygame.time.Clock() # クロックオブジェクトを作成
 
@@ -13,15 +14,28 @@ def main():
   walls = 80 # 矩形の数
   holes = [] # 矩形を格納する配列を初期化
   slope = randint(1, 6) # 傾きを指定(randint: 0～6の範囲の整数値をランダムに取得)
+  ship_y = 250 # 自機のY座標
+  velocity = 0 # 自機が上下に移動する際の速度
+  ship_image = pygame.image.load("ship.png") # 自機_image
+  bang_image = pygame.image.load("bang.png") # gameover_image
   for xpos in range(walls): # x座標を10ずつずらしながら80個の矩形を作成
     holes.append(Rect(xpos * 10, 100, 10, 400)) # (x, y, width, height)
 
   while True:
+    is_space_down = False # ループを開始する都度、Falseで初期化
     for event in pygame.event.get(): # イベントキューからイベントを取得
       # 終了イベントを検出した時にプログラムを終了する
       if event.type == QUIT: # イベントがQUITの時
         pygame.quit() # pygameの初期化を解除
         sys.exit() # プログラム終了
+      elif event.type == KEYDOWN: # キー押下
+        if event.key == K_SPACE: # SPACEキー押下
+          is_space_down = True # flag_on
+
+    # 自機を移動
+    # SPACEキー押下状態に応じて速度を-3(上昇)、+3(落下)変化させる
+    velocity += -3 if is_space_down else 3
+    ship_y += velocity
 
     # 洞窟をスクロール
     edge = holes[-1].copy() # 右端の矩形ををコピーしてedgeに格納
@@ -38,6 +52,7 @@ def main():
     SURFACE.fill((0, 255, 0)) # ウィンドウを緑色(R,G,B)に塗りつぶす
     for hole in holes: # 画面オブジェクトに黒色の矩形リストholesを描画
       pygame.draw.rect(SURFACE, (0, 0, 0), hole)
+    SURFACE.blit(ship_image, (0, ship_y)) # 自機を描画
 
     pygame.display.update() # プログラム中に描画した内容を画面に反映
     FPSCLOCK.tick(10) # 1秒間に10回ループが実行
