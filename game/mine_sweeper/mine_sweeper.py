@@ -13,6 +13,8 @@ NUM_OF_BOMBS = 20 # 爆弾の数
 EMPTY = 0 # マップ上のタイルがからの状態
 BOMB = 1 # マップ上のタイルに爆弾がある状態
 OPENED = 2 # マップ上のタイルが開封状態
+OPEN_COUNT = 0 # 開かれたタイルの数
+CHECKED = [[0 for _ in range(WIDTH)] for _ in range(HEIGHT)] # タイルの状態を既にチェックしたか記録する配列
 
 pygame.init() # pygameモジュールを初期化
 SURFACE = pygame.display.set_mode([WIDTH*SIZE, HEIGHT*SIZE]) #サイズを指定してウィンドウを作成
@@ -33,7 +35,25 @@ def num_of_bomb(field, x_pos, y_pos):
 
 def open_tile(field, x_pos, y_pos):
   """ タイルをオープン """
-  field[y_pos][x_pos] = OPENED # field状態を開封状態に変更
+  global OPEN_COUNT # グローバル変数を変更するためグローバル宣言する
+  if CHECKED[y_pos][x_pos]:  # 既にチェック済みのタイルの時
+    return # 何もしない
+
+  CHECKED[y_pos][x_pos] = True # 指定されたタイルをチェック済みに変更
+
+  # x, y軸にそれぞれ-1, 0, 1と変化させて
+  # (x_pos, y_pos)の周りにある爆弾の数をカウント
+  for yoffset in range(-1, 2):
+    for xoffset in range(-1, 2):
+      xpos, ypos = (x_pos + xoffset, y_pos + yoffset)
+      if 0 <= xpos < WIDTH and 0 <= ypos < HEIGHT and \
+        field[ypos][xpos] == EMPTY: # xpos, yposがマス内であるか and 未開封状態の時
+        field[ypos][xpos] = OPENED # field状態を開封状態に変更
+        OPEN_COUNT += 1 # 判定成立でカウントアップ
+        count = num_of_bomb(field, xpos, ypos) # 関数を呼び出して爆弾の数を取得
+        if count == 0 and \
+          not (xpos == x_pos and ypos == y_pos): # 爆弾の数が0, 初めに指定したタイルでない時
+          open_tile(field, xpos, ypos) # 再度関数を呼び出す
 
 def main():
   """main routine"""
@@ -69,10 +89,10 @@ def main():
       for xpos in range(WIDTH):
         tile = field[ypos][xpos] # 左上から順にfield状態をtileに格納
         rect = (xpos*SIZE, ypos*SIZE, SIZE, SIZE) # tileの矩形サイズを取得
-        if tile == EMPTY: # field状態が未開封状態の時
+        if tile == EMPTY or tile == BOMB: # field状態が未開封状態の時
           pygame.draw.rect(SURFACE, (192, 192, 192), rect) # 未開封状態を描画
-        elif tile == BOMB: # field状態が爆弾有りの時
-          pygame.draw.ellipse(SURFACE, (225, 225, 0), rect) # 爆弾有りを描画
+          if tile == BOMB: # field状態が爆弾有りの時
+            pygame.draw.ellipse(SURFACE, (225, 225, 0), rect) # 爆弾有りを描画
         elif tile == OPENED: # field状態が開封状態の時
           count = num_of_bomb(field, xpos, ypos) # 関数を呼び出して爆弾の数を取得
           if count > 0: # 爆弾有りの時
