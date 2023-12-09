@@ -58,7 +58,7 @@ def open_tile(field, x_pos, y_pos):
 def main():
   """main routine"""
   smallfont = pygame.font.SysFont(None, 36) # 爆弾の数を表示するFontオブジェクトを作成
-
+  game_over = False # gameoverのフラグをFalseで初期化
   # field1状態をからで初期化 field(list) = [0, 0, ...], [0, ...], ...
   field = [[EMPTY for xpos in range(WIDTH)] for ypos in range(HEIGHT)]
 
@@ -80,7 +80,10 @@ def main():
         # クリックされた位置からタイルの位置を取得
         # floor(): 小数点切り捨て(負数は負方向に丸められる)
         xpos, ypos = floor(event.pos[0] / SIZE), floor(event.pos[1] / SIZE)
-        open_tile(field, xpos, ypos) # 関数を呼び出して、タイルを開封状態に変更
+        if field[ypos][xpos] == BOMB: # 指定したタイルが爆弾有りの時
+          game_over = True # gameoverのフラグをTrueに変更
+        else:
+          open_tile(field, xpos, ypos) # 関数を呼び出して、タイルを開封状態に変更
 
     # 描画
     SURFACE.fill((0, 0, 0)) # ウィンドウを黒色(R,G,B)に塗りつぶす
@@ -91,7 +94,7 @@ def main():
         rect = (xpos*SIZE, ypos*SIZE, SIZE, SIZE) # tileの矩形サイズを取得
         if tile == EMPTY or tile == BOMB: # field状態が未開封状態の時
           pygame.draw.rect(SURFACE, (192, 192, 192), rect) # 未開封状態を描画
-          if tile == BOMB: # field状態が爆弾有りの時
+          if game_over and tile == BOMB: # game_over状態かつfield状態が爆弾有りの時
             pygame.draw.ellipse(SURFACE, (225, 225, 0), rect) # 爆弾有りを描画
         elif tile == OPENED: # field状態が開封状態の時
           count = num_of_bomb(field, xpos, ypos) # 関数を呼び出して爆弾の数を取得
