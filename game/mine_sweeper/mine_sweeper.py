@@ -58,8 +58,13 @@ def open_tile(field, x_pos, y_pos):
 def main():
   """main routine"""
   smallfont = pygame.font.SysFont(None, 36) # 爆弾の数を表示するFontオブジェクトを作成
+  largefont = pygame.font.SysFont(None, 72) # クリア判定を表示するFontオブジェクトを作成
+  message_clear = largefont.render("!!CLEARED!!", True, (0, 255, 225)) # クリアメッセージ
+  message_over = largefont.render("GAME OVER!!", True, (0, 255, 225)) # ゲームオーバメッセージ
+  message_rect = message_clear.get_rect() # 画像の占める矩形をget_rect()メソッドで取得
+  message_rect.center = (WIDTH*SIZE/2, HEIGHT*SIZE/2) # プロパティに中心の座標を設定
   game_over = False # gameoverのフラグをFalseで初期化
-  # field1状態をからで初期化 field(list) = [0, 0, ...], [0, ...], ...
+  # field状態をからで初期化 field(list) = [0, 0, ...], [0, ...], ...
   field = [[EMPTY for xpos in range(WIDTH)] for ypos in range(HEIGHT)]
 
   # 爆弾を設置
@@ -111,6 +116,12 @@ def main():
     # 横線
     for index in range(0, HEIGHT*SIZE, SIZE): # 上端から下端までタイルのサイズごとにy座標を指定
       pygame.draw.line(SURFACE, (96, 96, 96), (0, index), (WIDTH*SIZE, index))
+
+    # メッセージの描画
+    if OPEN_COUNT == WIDTH*HEIGHT - NUM_OF_BOMBS: # 全てのタイルが開封状態の時
+      SURFACE.blit(message_clear, message_rect.topleft) # クリア
+    elif game_over:
+      SURFACE.blit(message_over, message_rect.topleft) # ゲームオーバー
 
     pygame.display.update() # プログラム中に描画した内容を画面に反映
     FPSCLOCK.tick(1) # 1秒間に1回ループが実行
