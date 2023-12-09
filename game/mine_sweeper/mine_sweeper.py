@@ -16,8 +16,22 @@ pygame.init() # pygameモジュールを初期化
 SURFACE = pygame.display.set_mode([WIDTH*SIZE, HEIGHT*SIZE]) #サイズを指定してウィンドウを作成
 FPSCLOCK = pygame.time.Clock() # クロックオブジェクトを作成
 
+def num_of_bomb(field, x_pos, y_pos):
+  """ 周囲にある爆弾の数を返す """
+  count = 0 # 戻り値を初期化
+  # x, y軸にそれぞれ-1, 0, 1と変化させて
+  # (x_pos, y_pos)の周りにある爆弾の数をカウント
+  for yoffset in range(-1, 2):
+    for xoffset in range(-1, 2):
+      xpos, ypos = (x_pos + xoffset, y_pos + yoffset) # (x_pos, y_pos)をoffset
+      if 0 <= xpos < WIDTH and 0 <= ypos < HEIGHT and \
+        field[ypos][xpos] == BOMB: # xpos, yposがマス内であるか and 爆弾有りか判定
+        count += 1 # 判定成立でカウントアップ
+  return count # 爆弾の数を返す
+
 def main():
   """main routine"""
+  smallfont = pygame.font.SysFont(None, 36) # 爆弾の数を表示するFontオブジェクトを作成
 
   # field1状態をからで初期化 field(list) = [0, 0, ...], [0, ...], ...
   field = [[EMPTY for xpos in range(WIDTH)] for ypos in range(HEIGHT)]
@@ -45,7 +59,13 @@ def main():
         tile = field[ypos][xpos] # 左上から順にfield状態をtileに格納
         rect = (xpos*SIZE, ypos*SIZE, SIZE, SIZE) # tileの矩形サイズを取得
         if tile == EMPTY: # field状態がENPTYの時
-          pygame.draw.rect(SURFACE, (192, 192, 192), rect) # 未開封状態を描画
+          #pygame.draw.rect(SURFACE, (192, 192, 192), rect) # 未開封状態を描画
+          count = num_of_bomb(field, xpos, ypos) # 関数を呼び出して爆弾の数を取得
+          if count > 0: # 爆弾の数が0より多ければ
+            # render(text: 描画するテキスト, antialias: アンチエイリアス(輪郭をスムーズに), color: 色)
+            num_image = smallfont.render("{}".format(count), True, (255, 255, 0))
+            SURFACE.blit(num_image, (xpos*SIZE+10, ypos*SIZE+10)) # 爆弾の数を描画(左上から+10ずつoffset)
+            
         elif tile == BOMB:
           pygame.draw.ellipse(SURFACE, (225, 225, 0), rect) # 爆弾有りを描画
 
