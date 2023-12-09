@@ -1,8 +1,9 @@
 """mine_sweeper - Copyright 20231209_01"""
 import sys
+from math import floor
 import pygame
 from random import randint
-from pygame.locals import QUIT
+from pygame.locals import QUIT, MOUSEBUTTONDOWN
 
 # グローバル変数定義
 WIDTH = 20 # 横方向のマスの数
@@ -11,6 +12,7 @@ SIZE = 50 # 1マスの縦横のサイズ
 NUM_OF_BOMBS = 20 # 爆弾の数
 EMPTY = 0 # マップ上のタイルがからの状態
 BOMB = 1 # マップ上のタイルに爆弾がある状態
+OPENED = 2 # マップ上のタイルが開封状態
 
 pygame.init() # pygameモジュールを初期化
 SURFACE = pygame.display.set_mode([WIDTH*SIZE, HEIGHT*SIZE]) #サイズを指定してウィンドウを作成
@@ -28,6 +30,10 @@ def num_of_bomb(field, x_pos, y_pos):
         field[ypos][xpos] == BOMB: # xpos, yposがマス内であるか and 爆弾有りか判定
         count += 1 # 判定成立でカウントアップ
   return count # 爆弾の数を返す
+
+def open_tile(field, x_pos, y_pos):
+  """ タイルをオープン """
+  field[y_pos][x_pos] = OPENED # field状態を開封状態に変更
 
 def main():
   """main routine"""
@@ -50,6 +56,11 @@ def main():
       if event.type == QUIT: # イベントがQUITの時
         pygame.quit() # pygameの初期化を解除
         sys.exit() # プログラム終了
+      if event.type == MOUSEBUTTONDOWN and event.button == 1: # 左クリックされた時
+        # クリックされた位置からタイルの位置を取得
+        # floor(): 小数点切り捨て(負数は負方向に丸められる)
+        xpos, ypos = floor(event.pos[0] / SIZE), floor(event.pos[1] / SIZE)
+        open_tile(field, xpos, ypos) # 関数を呼び出して、タイルを開封状態に変更
 
     # 描画
     SURFACE.fill((0, 0, 0)) # ウィンドウを黒色(R,G,B)に塗りつぶす
@@ -58,16 +69,16 @@ def main():
       for xpos in range(WIDTH):
         tile = field[ypos][xpos] # 左上から順にfield状態をtileに格納
         rect = (xpos*SIZE, ypos*SIZE, SIZE, SIZE) # tileの矩形サイズを取得
-        if tile == EMPTY: # field状態がENPTYの時
-          #pygame.draw.rect(SURFACE, (192, 192, 192), rect) # 未開封状態を描画
+        if tile == EMPTY: # field状態が未開封状態の時
+          pygame.draw.rect(SURFACE, (192, 192, 192), rect) # 未開封状態を描画
+        elif tile == BOMB: # field状態が爆弾有りの時
+          pygame.draw.ellipse(SURFACE, (225, 225, 0), rect) # 爆弾有りを描画
+        elif tile == OPENED: # field状態が開封状態の時
           count = num_of_bomb(field, xpos, ypos) # 関数を呼び出して爆弾の数を取得
-          if count > 0: # 爆弾の数が0より多ければ
+          if count > 0: # 爆弾有りの時
             # render(text: 描画するテキスト, antialias: アンチエイリアス(輪郭をスムーズに), color: 色)
             num_image = smallfont.render("{}".format(count), True, (255, 255, 0))
             SURFACE.blit(num_image, (xpos*SIZE+10, ypos*SIZE+10)) # 爆弾の数を描画(左上から+10ずつoffset)
-            
-        elif tile == BOMB:
-          pygame.draw.ellipse(SURFACE, (225, 225, 0), rect) # 爆弾有りを描画
 
     # 線の描画
     # line(SURFACE: ベース画面オブジェクト, color: 色, start_pos: 始点, end_pos: 終点, width: 線の幅)
