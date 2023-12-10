@@ -1,5 +1,6 @@
 """saturn_voyager - Copyright 20231210_01"""
 import sys
+from random import randint
 import pygame
 from pygame.locals import QUIT
 
@@ -9,6 +10,14 @@ FPSCLOCK = pygame.time.Clock() # クロックオブジェクトを作成
 
 def main():
   """main routine"""
+  stars = [] # 隕石を格納するリスト
+  ship = [0, 0] # 自機の座標
+  rock_image = pygame.image.load("rock.png") # 隕石_image
+
+  while len(stars) < 200: # 隕石を200個(x, y, z)座標と回転角をランダムに配置
+    stars.append({
+      "pos": [randint(-1600, 1600),randint(-1600, 1600), randint(0, 4095)],
+      "theta": randint(0, 360)}) # カラのstarsリストに200回append
 
   while True:
     for event in pygame.event.get(): # イベントキューからイベントを取得
@@ -18,6 +27,18 @@ def main():
         sys.exit() # プログラム終了
 
     SURFACE.fill((0, 0, 0)) # ウィンドウを黒色(R,G,B)に塗りつぶす
+    stars = sorted(stars, key=lambda x: x["pos"][2], reverse=True) # x["pos"][2](z軸)の大きい順にソート
+    for star in stars:
+      zpos = star["pos"][2]
+      # <<: ビットシフト, 2の9乗拡大する⇦立体化を出すため
+      # ((star["pos"][0]) - ship[0])/zpos: (隕石を自機の差分)/z座標⇦中心からの差分を出すため
+      # +400: 描画領域(800*800)の中心を原点にするため
+      xpos = ((star["pos"][0] - ship[0]) << 9) / zpos + 400
+      ypos = ((star["pos"][1] - ship[1]) << 9) / zpos + 400
+      size = (50 << 9) / zpos
+      # rotozoom(Surface: 回転とズームを行うSurface, angle: 回転角, scale: ズームの倍率)
+      rotated = pygame.transform.rotozoom(rock_image, star["theta"], size / 145)
+      SURFACE.blit(rotated, (xpos, ypos))
 
     pygame.display.update() # プログラム中に描画した内容を画面に反映
     FPSCLOCK.tick(1) # 1秒間に1回ループが実行
