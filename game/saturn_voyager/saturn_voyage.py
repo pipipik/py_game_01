@@ -14,8 +14,15 @@ def main():
   ship = [0, 0] # 自機の座標
   speed = 25 # スピード(時間経過と共に加速)
   keymap = [] # どのキーが押下されているかを示すリスト
+  game_over = False # ゲームオーバーフラグ
+
   rock_image = pygame.image.load("rock.png") # 隕石_image
   scope_image = pygame.image.load("scope.png") # 自機_image
+
+  sysfont = pygame.font.SysFont(None, 72) # Fontオブジェクト
+  message_over = sysfont.render("GAME OVER!!", True, (0, 255, 225)) # Surfaceオブジェクト
+  message_rect = message_over.get_rect() # 画像の占める矩形をget_rect()メソッドで取得
+  message_rect.center = (400, 400) # プロパティに中心の座標を設定
 
   while len(stars) < 200: # 隕石を200個(x, y, z)座標と回転角をランダムに配置
     stars.append({
@@ -35,23 +42,30 @@ def main():
         keymap.remove(event.key)
 
     # フレーム毎の処理
-    if K_LEFT in keymap: # 左キー
-      ship[0] -= 30
-    elif K_RIGHT in keymap: # 右キー
-      ship[0] += 30
-    elif K_UP in keymap: # 上キー
-      ship[1] -= 30
-    elif K_DOWN in keymap: # 下キー
-      ship[1] += 30
+    if not game_over: # ゲーム中の処理
+    
+      # フレーム毎の処理
+      if K_LEFT in keymap: # 左キー
+        ship[0] -= 30
+      elif K_RIGHT in keymap: # 右キー
+        ship[0] += 30
+      elif K_UP in keymap: # 上キー
+        ship[1] -= 30
+      elif K_DOWN in keymap: # 下キー
+        ship[1] += 30
 
-    # min(800, ship[0]): 800以下(上限ガード)
-    # max(-800, ship[0]): -800以上(下限ガード)
-    ship[0] = max(-800, min(800, ship[0])) # x座標のガード
-    ship[1] = max(-800, min(800, ship[1])) # y座標のガード
+      ship[0] = max(-800, min(800, ship[0])) # x座標のガード
+      ship[1] = max(-800, min(800, ship[1])) # y座標のガード
 
-    # 隕石の移動
-    for star in stars:
-      star["pos"][2] -= speed # z座標をスピード分減らす(近づける)
+      # 隕石の移動
+      for star in stars:
+        star["pos"][2] -= speed # z座標をスピード分減らす(近づける)
+        # 衝突判定
+        if star["pos"][2] < 64: # XY平面にの近づき
+          if abs(star["pos"][0] - ship[0]) < 50 and \
+             abs(star["pos"][1] - ship[1]) < 50: # 隕石と自機の距離
+            game_over = True
+          star["pos"] = [randint(-1600, 1600), randint(-1600, 1600), 4095] # 衝突しなければ一番遠い位置に再配置
 
     # 描画
     SURFACE.fill((0, 0, 0)) # ウィンドウを黒色(R,G,B)に塗りつぶす
@@ -69,6 +83,10 @@ def main():
       SURFACE.blit(rotated, (xpos, ypos))
 
     SURFACE.blit(scope_image, (0, 0)) # 自機の描画
+
+    if game_over: # ゲームオーバー
+      SURFACE.blit(message_over, message_rect) # メッセージ描画
+      pygame.mixer.music.stop()
 
     pygame.display.update() # プログラム中に描画した内容を画面に反映
     FPSCLOCK.tick(15) # 1秒間に15回ループが実行
