@@ -15,10 +15,11 @@ def main():
   speed = 25 # スピード(時間経過と共に加速)
   keymap = [] # どのキーが押下されているかを示すリスト
   game_over = False # ゲームオーバーフラグ
-
+  score = 0 # スコア
   rock_image = pygame.image.load("rock.png") # 隕石_image
   scope_image = pygame.image.load("scope.png") # 自機_image
 
+  scorefont = pygame.font.SysFont(None, 36) # Fontオブジェクト
   sysfont = pygame.font.SysFont(None, 72) # Fontオブジェクト
   message_over = sysfont.render("GAME OVER!!", True, (0, 255, 225)) # Surfaceオブジェクト
   message_rect = message_over.get_rect() # 画像の占める矩形をget_rect()メソッドで取得
@@ -43,7 +44,10 @@ def main():
 
     # フレーム毎の処理
     if not game_over: # ゲーム中の処理
-    
+      score += 1 # スコア加算
+      if score % 10 == 0:
+        speed += 1 # スピード加算
+
       # フレーム毎の処理
       if K_LEFT in keymap: # 左キー
         ship[0] -= 30
@@ -87,6 +91,11 @@ def main():
     if game_over: # ゲームオーバー
       SURFACE.blit(message_over, message_rect) # メッセージ描画
       pygame.mixer.music.stop()
+
+    # スコアの描画
+    score_str = str(score).zfill(6) # 文字列の左側を0で埋める
+    score_image = scorefont.render(score_str, True, (0, 255, 0))
+    SURFACE.blit(score_image, (700, 50)) # スコア描画
 
     pygame.display.update() # プログラム中に描画した内容を画面に反映
     FPSCLOCK.tick(15) # 1秒間に15回ループが実行
