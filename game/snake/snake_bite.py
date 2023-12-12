@@ -45,6 +45,7 @@ def paint():
 def main():
   """main routine"""
   key = K_DOWN # 初期状態は下キー
+  game_over = False # フラグ
   SNAKE.append((int(W/2), int(H/2))) # 初期状態は画面中央
   for _ in range(10):
     add_food() # 餌を10個配置
@@ -57,21 +58,25 @@ def main():
         sys.exit() # プログラム終了
       elif event.type == KEYDOWN: # キー押下
         key = event.key
+    if not game_over:
+      if key == K_LEFT: # 左キー: x座標を-1
+        head = (SNAKE[0][0] - 1, SNAKE[0][1])
+      elif key == K_RIGHT: # 右キー: x座標を+1
+        head = (SNAKE[0][0] + 1, SNAKE[0][1])
+      elif key == K_UP: # 上キー: y座標を-1
+        head = (SNAKE[0][0], SNAKE[0][1] - 1)
+      elif key == K_DOWN: # 下キー: y座標を+1
+        head = (SNAKE[0][0], SNAKE[0][1] + 1)
 
-    if key == K_LEFT: # 左キー: x座標を-1
-      head = (SNAKE[0][0] - 1, SNAKE[0][1])
-    elif key == K_RIGHT: # 右キー: x座標を+1
-      head = (SNAKE[0][0] + 1, SNAKE[0][1])
-    elif key == K_UP: # 上キー: y座標を-1
-      head = (SNAKE[0][0], SNAKE[0][1] - 1)
-    elif key == K_DOWN: # 下キー: y座標を+1
-      head = (SNAKE[0][0], SNAKE[0][1] + 1)
+      # 衝突判定 1. 自分自身の衝突, 2. 左右の壁の衝突, 3. 上下の壁の衝突
+      if head in SNAKE or head[0] < 0 or head[0] >= W or head[1] < 0 or head[1] >= H:
+        game_over = True
 
-    SNAKE.insert(0, head) # キーに応じて要素を追加
-    if head in FOODS: # 先頭headの座標に餌があった時
-      move_food(head) # 餌を移動する関数呼び出し
-    else:
-      SNAKE.pop() # 末尾の座標を削除
+      SNAKE.insert(0, head) # キーに応じて要素を追加
+      if head in FOODS: # 先頭headの座標に餌があった時
+        move_food(head) # 餌を移動する関数呼び出し
+      else:
+        SNAKE.pop() # 末尾の座標を削除
 
     paint() # 描画関数呼び出し
     FPSCLOCK.tick(5) # 1秒間に5回ループが実行
