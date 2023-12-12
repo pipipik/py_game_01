@@ -21,6 +21,12 @@ def add_food():
     FOODS.append(pos) # 座標を追加
     break # ループから抜けて呼び出し元に戻る
 
+def move_food(pos):
+  """ 餌を別の場所へ移動 """
+  i = FOODS.index(pos) # 座標のindexを取得
+  del FOODS[i] # 座標を削除
+  add_food() # 餌を追加
+
 def paint():
   """ 画面全体の描画 """
   SURFACE.fill((0, 0, 0)) # ウィンドウを黒色(R,G,B)に塗りつぶす
@@ -61,11 +67,14 @@ def main():
     elif key == K_DOWN: # 下キー: y座標を+1
       head = (SNAKE[0][0], SNAKE[0][1] + 1)
 
-
     SNAKE.insert(0, head) # キーに応じて要素を追加
+    if head in FOODS: # 先頭headの座標に餌があった時
+      move_food(head) # 餌を移動する関数呼び出し
+    else:
+      SNAKE.pop() # 末尾の座標を削除
 
     paint() # 描画関数呼び出し
-    FPSCLOCK.tick(1) # 1秒間に1回ループが実行
+    FPSCLOCK.tick(5) # 1秒間に5回ループが実行
 
 # 自ファイルから開始された時にmain関数が実行
 if __name__ == '__main__':
