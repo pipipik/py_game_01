@@ -7,6 +7,15 @@ pygame.init() # pygameモジュールを初期化
 SURFACE = pygame.display.set_mode((600, 600)) #サイズを指定してウィンドウを作成
 FPSCLOCK = pygame.time.Clock() # クロックオブジェクトを作成
 
+def paint():
+  """ 画面全体の描画 """
+  SURFACE.fill((0, 0, 0)) # ウィンドウを黒色(R,G,B)に塗りつぶす
+  for index in range(20): # 20*20マス作成
+    pygame.draw.line(SURFACE, (64, 64, 64), (index*30, 0), (index*30, 600))
+    pygame.draw.line(SURFACE, (64, 64, 64), (0, index*30), (600, index*30))
+
+  pygame.display.update() # プログラム中に描画した内容を画面に反映
+
 def main():
   """main routine"""
 
@@ -17,9 +26,7 @@ def main():
         pygame.quit() # pygameの初期化を解除
         sys.exit() # プログラム終了
 
-    SURFACE.fill((0, 0, 0)) # ウィンドウを黒色(R,G,B)に塗りつぶす
-
-    pygame.display.update() # プログラム中に描画した内容を画面に反映
+    paint()
     FPSCLOCK.tick(1) # 1秒間に1回ループが実行
 
 # 自ファイルから開始された時にmain関数が実行
