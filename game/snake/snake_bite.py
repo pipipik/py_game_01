@@ -27,7 +27,7 @@ def move_food(pos):
   del FOODS[i] # 座標を削除
   add_food() # 餌を追加
 
-def paint():
+def paint(message):
   """ 画面全体の描画 """
   SURFACE.fill((0, 0, 0)) # ウィンドウを黒色(R,G,B)に塗りつぶす
   for food in FOODS: # 配列から座標を取り出し、円を描画
@@ -40,12 +40,16 @@ def paint():
     pygame.draw.line(SURFACE, (64, 64, 64), (index*30, 0), (index*30, 600))
     pygame.draw.line(SURFACE, (64, 64, 64), (0, index*30), (600, index*30))
 
+  if message != None: # messageがある時は描画
+    SURFACE.blit(message, (150, 300))
   pygame.display.update() # プログラム中に描画した内容を画面に反映
 
 def main():
   """main routine"""
+  myfont = pygame.font.SysFont(None, 80)
   key = K_DOWN # 初期状態は下キー
   game_over = False # フラグ
+  message = None
   SNAKE.append((int(W/2), int(H/2))) # 初期状態は画面中央
   for _ in range(10):
     add_food() # 餌を10個配置
@@ -70,6 +74,7 @@ def main():
 
       # 衝突判定 1. 自分自身の衝突, 2. 左右の壁の衝突, 3. 上下の壁の衝突
       if head in SNAKE or head[0] < 0 or head[0] >= W or head[1] < 0 or head[1] >= H:
+        message = myfont.render("Game Over!", True, (255, 255, 0))
         game_over = True
 
       SNAKE.insert(0, head) # キーに応じて要素を追加
@@ -78,7 +83,7 @@ def main():
       else:
         SNAKE.pop() # 末尾の座標を削除
 
-    paint() # 描画関数呼び出し
+    paint(message) # 描画関数呼び出し
     FPSCLOCK.tick(5) # 1秒間に5回ループが実行
 
 # 自ファイルから開始された時にmain関数が実行
